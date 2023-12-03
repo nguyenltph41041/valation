@@ -791,7 +791,7 @@ public class Form_NhanVien extends javax.swing.JPanel {
             sorter.setRowFilter(RowFilter.regexFilter("Nữ"));
             jTable3.setRowSorter(sorter);
             TableRowSorter<TableModel> sorter2 = new TableRowSorter<>(((DefaultTableModel) jTable4.getModel()));
-            sorter2.setRowFilter(RowFilter.regexFilter("Nam"));
+            sorter2.setRowFilter(RowFilter.regexFilter("Nữ"));
             jTable4.setRowSorter(sorter2);
         }
 

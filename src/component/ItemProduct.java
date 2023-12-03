@@ -208,8 +208,9 @@ public final class ItemProduct extends javax.swing.JPanel {
         }
 
         if (Integer.valueOf(jSpinner1.getValue().toString()) > data.getSoLuong()) {
-            MsgHelper.alert(this, "Không đủ số lượng sản phẩm \nThêm thất bại ");
             jSpinner1.setValue(data.getSoLuong());
+            MsgHelper.alert(this, "Không đủ số lượng sản phẩm \nThêm thất bại ");
+            
             return;
         }
         HoaDon lastHD = donService.getAll().get(donService.getAll().size() - 1);
@@ -231,8 +232,8 @@ public final class ItemProduct extends javax.swing.JPanel {
         }else{
             jButton1.setEnabled(true);
         }
-        if (Integer.valueOf(jSpinner1.getValue().toString()) > data.getSoLuong()) {
-            MsgHelper.alert(this, "Không đủ số lượng cho đại gia mua");
+        if (Integer.valueOf(jSpinner1.getValue().toString()) > data.getSoLuong()) {     
+            MsgHelper.alert(this, "Không đủ số lượng cho đại gia mua");  
             jSpinner1.setValue(data.getSoLuong());
         }
     }//GEN-LAST:event_jSpinner1StateChanged
@@ -245,6 +246,7 @@ public final class ItemProduct extends javax.swing.JPanel {
         if (Integer.valueOf(jSpinner1.getValue().toString()) > data.getSoLuong()) {
             MsgHelper.alert(this, "Không đủ số lượng cho đại gia mua");
             jSpinner1.setValue(data.getSoLuong());
+            
         }
     }//GEN-LAST:event_jSpinner1InputMethodTextChanged
 

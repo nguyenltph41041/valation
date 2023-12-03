@@ -45,8 +45,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import services.KhachHangServiceV1;
@@ -89,7 +87,7 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
                 @Override
                 public void insertUpdate(DocumentEvent e) {
                     String temp = "";
-                    String[] arStr = totalAmount.getText().split("\\.");
+                    String[] arStr = valueTotalMoneyComplete.getText().split("\\.");
                     for (String item : arStr) {
                         temp += item;
                     }
@@ -201,6 +199,7 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
                 spct.getGia() * o.getSoLongMua()
             });
         }
+        
     }
 
     public void addItem(SanPhamChiTiet data) {
@@ -222,19 +221,41 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
     @Override
     public void onItemClick(SanPhamChiTiet data) {
         int sumMoney = 0;
+        int sumMoneyBeforeDiscount = 0;
         list = hoaDonCTService.getByIDHD(Integer.parseInt(jLabel7.getText()));
         initModel(list);
         panelItem.removeAll();
         for (SanPhamChiTiet o : cTService.getAll()) {
             this.addItem(o);
+            refundAmount.setText("");
+            paymentAmount.setText("");
         }
         for (int i = 0; i < jTable1.getRowCount(); i++) {
             sumMoney += Integer.valueOf(jTable1.getValueAt(i, 2).toString());
         }
+        sumMoneyBeforeDiscount = sumMoney;
+        KhachHang khachHang = hangServiceV1.getBySDT(phoneNumber.getText());
+        if (khachHang.getTichDiem() >= 3000 && khachHang.getTichDiem() < 6000) {
+            sumMoney = sumMoney - sumMoney * 5 / 100;
+            valueDiscount.setText("5%");
+        } else if (khachHang.getTichDiem() >= 6000 && khachHang.getTichDiem() < 9000) {
+            sumMoney = sumMoney - sumMoney * 10 / 100;
+            valueDiscount.setText("10%");
+        } else if (khachHang.getTichDiem() >= 9000 && khachHang.getTichDiem() < 12000) {
+            sumMoney = sumMoney - sumMoney * 15 / 100;
+            valueDiscount.setText("15%");
+        } else if (khachHang.getTichDiem() >= 12000) {
+            sumMoney = sumMoney - sumMoney * 20 / 100;
+            valueDiscount.setText("20%");
+        } else {
+            valueDiscount.setText("0%");
+        }
         DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
         dfs.setDecimalSeparator('.');
+        DecimalFormat df1 = new DecimalFormat("#,##0", dfs);
+        valueTotalMoneyComplete.setText(df1.format(sumMoney));
         DecimalFormat df = new DecimalFormat("#,##0", dfs);
-        totalAmount.setText(df.format(sumMoney));
+        totalAmount.setText(df.format(sumMoneyBeforeDiscount));
     }
 
     DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -318,6 +339,10 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
         phoneNumber = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         customerName = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        valueDiscount = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        valueTotalMoneyComplete = new javax.swing.JLabel();
 
         setOpaque(false);
 
@@ -355,7 +380,7 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Tổng tiền");
+        jLabel1.setText("Tổng tiền :");
 
         totalAmount.setFont(new java.awt.Font("Segoe UI Historic", 0, 21)); // NOI18N
         totalAmount.setText("00.000");
@@ -424,6 +449,15 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel10.setText("Tên khách hàng:");
 
+        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setText("Triết khấu:");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel5.setText("Tổng tiền cần trả :");
+
+        valueTotalMoneyComplete.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -438,32 +472,40 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(94, 94, 94)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jLabel2))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(refundAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(paymentAmount)
                     .addComponent(totalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(createdDate, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                     .addComponent(phoneNumber)
-                    .addComponent(customerName))
+                    .addComponent(customerName)
+                    .addComponent(valueDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paymentAmount, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                    .addComponent(valueTotalMoneyComplete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(21, 21, 21))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(43, 43, 43)
-                .addComponent(jButton1)
-                .addGap(18, 18, 18)
-                .addComponent(jButton2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(32, 32, 32)
+                        .addComponent(jButton2)
+                        .addGap(37, 37, 37))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -492,23 +534,31 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(2, 2, 2)
                         .addComponent(jLabel6)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(3, 3, 3)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(totalAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                    .addComponent(paymentAmount))
+                .addGap(9, 9, 9)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(valueDiscount, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5)
+                    .addComponent(valueTotalMoneyComplete, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(4, 4, 4)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
-                    .addComponent(refundAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                    .addComponent(paymentAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(refundAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(11, 11, 11))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -557,10 +607,10 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
         if (!ValidationUtils.isPhoneNumber(phoneNumber.getText())) {
             MsgHelper.alert(this, "Số điện thoại không hợp lệ!");
         }
-        
+
         //Validate for paymentAmount
-        if(!ValidationUtils.isNumber(paymentAmount.getText())){
-             MsgHelper.alert(this, "Số tiền thanh toán không hợp lệ!");
+        if (!ValidationUtils.isNumber(paymentAmount.getText())) {
+            MsgHelper.alert(this, "Số tiền thanh toán không hợp lệ!");
         }
         if (customerName.getText().isBlank()) {
             MsgHelper.alert(this, "Điển thông tin khách hàng");
@@ -626,11 +676,25 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
             table.addCell("Ten san pham");
             table.addCell("So luong");
             table.addCell("Gia");
+            int tong = 0;
+            int count = 0;
             for (int i = 0; i < check; i++) {
                 table.addCell(jTable1.getValueAt(i, 0).toString());
                 table.addCell(jTable1.getValueAt(i, 1).toString());
                 table.addCell(jTable1.getValueAt(i, 2).toString());
+                tong += Integer.valueOf(jTable1.getValueAt(i, 2).toString());
+                count += Integer.valueOf(jTable1.getValueAt(i, 1).toString());
             }
+            table.addCell("Total ");
+            table.addCell(count + "");
+            table.addCell(tong + " VND");
+            table.addCell("Discount ");
+            table.addCell(valueDiscount.getText() + "");
+            table.addCell("");
+            table.addCell("So tien phai tra: ");
+            table.addCell("");
+            table.addCell(valueTotalMoneyComplete.getText() + " VND");
+            
 
             document.add(table);
 
@@ -655,12 +719,13 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
 
         KhachHang khachHang = hangServiceV1.getBySDT(phoneNumber.getText());
         String temp1 = "";
-        String[] arStr1 = totalAmount.getText().split("\\.");
+        String[] arStr1 = valueTotalMoneyComplete.getText().split("\\.");
         for (String item : arStr1) {
             temp1 += item;
         }
         temp1 = temp1.replace(",", ""); // Loại bỏ dấu phẩy trong chuỗi
         int value1 = Integer.parseInt(temp1);
+
         if (khachHang == null) {
             hangServiceV1.create(KhachHang.builder()
                     .sdt(phoneNumber.getText())
@@ -682,6 +747,8 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
         customerName.setText("");
         jLabel7.setText("0");
         createdDate.setText("00/00/0000");
+        valueDiscount.setText("");
+        valueTotalMoneyComplete.setText("");
         ischeckHD = true;
         model.setRowCount(0);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -720,8 +787,10 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
@@ -734,5 +803,7 @@ public final class FormHomeUI extends javax.swing.JPanel implements ItemClickLis
     private javax.swing.JLabel refundAmount;
     private javax.swing.JScrollPane scroll;
     private javax.swing.JLabel totalAmount;
+    private javax.swing.JLabel valueDiscount;
+    private javax.swing.JLabel valueTotalMoneyComplete;
     // End of variables declaration//GEN-END:variables
 }
